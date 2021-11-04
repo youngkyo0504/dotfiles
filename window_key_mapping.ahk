@@ -25,8 +25,10 @@ SetCapsLockState, AlwaysOff
 	7::PgUp
 	8::PgDn
 
-	w::^Right
-	d::^Left
+	w::^Up
+	a::^Left
+	s::^Down
+	d::^Right
 	e::Esc
 	c::CapsLock
 	t::_
