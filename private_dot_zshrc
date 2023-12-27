@@ -1,0 +1,246 @@
+# Fig pre block. Keep at the top of this file.
+[[ -f "$HOME/.fig/shell/zshrc.pre.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.pre.zsh"
+# User configuration sourced by interactive shells
+#
+
+# -----------------
+# Zsh configuration
+# -----------------
+
+#
+# History
+#
+
+# Remove older command from the history if a duplicate is to be added.
+setopt HIST_IGNORE_ALL_DUPS
+
+#
+# Input/output
+#
+
+# Set editor default keymap to emacs (`-e`) or vi (`-v`)
+bindkey -e
+
+# Prompt for spelling correction of commands.
+#setopt CORRECT
+
+# Customize spelling correction prompt.
+#SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
+
+# Remove path separator from WORDCHARS.
+WORDCHARS=${WORDCHARS//[\/]}
+
+# -----------------
+# Zim configuration
+# -----------------
+
+# Use degit instead of git as the default tool to install and update modules.
+#zstyle ':zim:zmodule' use 'degit'
+
+# --------------------
+# Module configuration
+# --------------------
+
+#
+# git
+#
+
+# Set a custom prefix for the generated aliases. The default prefix is 'G'.
+#zstyle ':zim:git' aliases-prefix 'g'
+
+#
+# input
+#
+
+# Append `../` to your input for each `.` you type after an initial `..`
+#zstyle ':zim:input' double-dot-expand yes
+
+#
+# termtitle
+#
+
+# Set a custom terminal title format using prompt expansion escape sequences.
+# See http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html#Simple-Prompt-Escapes
+# If none is provided, the default '%n@%m: %~' is used.
+#zstyle ':zim:termtitle' format '%1~'
+
+#
+# zsh-autosuggestions
+#
+
+# Disable automatic widget re-binding on each precmd. This can be set when
+# zsh-users/zsh-autosuggestions is the last module in your ~/.zimrc.
+ZSH_AUTOSUGGEST_MANUAL_REBIND=1
+
+# Customize the style that the suggestions are shown with.
+# See https://github.com/zsh-users/zsh-autosuggestions/blob/master/README.md#suggestion-highlight-style
+#ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=242'
+
+#
+# zsh-syntax-highlighting
+#
+
+# Set what highlighters will be used.
+# See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters.md
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets)
+
+# Customize the main highlighter styles.
+# See https://github.com/zsh-users/zsh-syntax-highlighting/blob/master/docs/highlighters/main.md#how-to-tweak-it
+#typeset -A ZSH_HIGHLIGHT_STYLES
+#ZSH_HIGHLIGHT_STYLES[comment]='fg=242'
+
+# ------------------
+# Initialize modules
+# ------------------
+ZDOTDIR=$HOME
+ZIM_HOME=${ZDOTDIR:-${HOME}}/.zim
+# Download zimfw plugin manager if missing.
+if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
+  if (( ${+commands[curl]} )); then
+    curl -fsSL --create-dirs -o ${ZIM_HOME}/zimfw.zsh \
+        https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+  else
+    mkdir -p ${ZIM_HOME} && wget -nv -O ${ZIM_HOME}/zimfw.zsh \
+        https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+  fi
+fi
+# Install missing modules, and update ${ZIM_HOME}/init.zsh if missing or outdated.
+if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
+  source ${ZIM_HOME}/zimfw.zsh init -q
+fi
+# Initialize modules.
+source ${ZIM_HOME}/init.zsh
+
+# ------------------------------
+# Post-init module configuration
+# ------------------------------
+
+#
+# zsh-history-substring-search
+#
+
+zmodload -F zsh/terminfo +p:terminfo
+# Bind ^[[A/^[[B manually so up/down works both before and after zle-line-init
+for key ('^[[A' '^P' ${terminfo[kcuu1]}) bindkey ${key} history-substring-search-up
+for key ('^[[B' '^N' ${terminfo[kcud1]}) bindkey ${key} history-substring-search-down
+for key ('k') bindkey -M vicmd ${key} history-substring-search-up
+for key ('j') bindkey -M vicmd ${key} history-substring-search-down
+unset key
+# }}} End configuration added by Zim install
+
+export PATH=/opt/homebrew/bin:$PATH
+
+
+# option arrow 기능 추가 
+bindkey "^X\\x7f" backward-kill-line
+"\e\e[D": backward-word
+"\e\e[C": forward-word
+
+export PATH="$PATH:/Users/keumky2/.kit/bin"
+
+
+
+alias zshrc="code ~/.zshrc"
+
+
+# pnpm
+export PNPM_HOME="/Users/keumky2/Library/pnpm"
+export PATH="$PNPM_HOME:$PATH"
+# pnpm end
+PATH=~/.knode/bin:$PATH
+alias ls="exa -l -g --icons --git"
+alias ll="exa -l -g --icons --git"
+alias llt="exa -1 --icons --tree --git-ignore"
+
+eval "$(fnm env --use-on-cd)"
+
+push() {
+  # 현재 브랜치를 origin에 같은 브랜치 네임으로 push $1은 옵션
+  current_branch=$(gb | grep \* | cut -d ' ' -f2)
+  echo "current branch: $current_branch"
+  git push origin $current_branch $1
+}
+
+ginfo(){
+  current_branch=$(git rev-parse --abbrev-ref HEAD)
+  ginfo="git config branch.$current_branch.description"
+}
+
+glist(){
+  # 현재 브랜치를 가져옵니다.
+  current_branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+ 
+  # 현재 Git 저장소의 모든 로컬 브랜치를 순회합니다.
+  for branch in $(git branch | sed 's/\*//'); do
+      # 브랜치 이름 앞의 공백을 제거합니다.
+      branch=$(echo $branch | xargs)
+  
+      # 브랜치의 설명을 가져옵니다.
+      description=$(git config branch."$branch".description)
+  
+      # 브랜치 이름과 설명을 출력합니다.
+      if [ ! -z "$description" ]; then
+          if [ "$branch" = "$current_branch" ]; then
+              echo "Branch: $branch (current)"
+          else
+              echo "Branch: $branch"
+          fi
+          echo "Description: $description"
+          echo
+      fi
+  done
+}
+
+
+# 커스텀 alias
+alias blue="pnpm tr dev --filter blue"
+alias mint="pnpm tr dev --filter mint"
+alias core="pnpm tr dev --filter core"
+alias changeset="Gcm 'docs: changes 작성'"
+
+
+# git alias
+alias gcm="git commit -m"
+alias gco="git checkout"
+alias gb="git branch"
+alias gl="git log --oneline"
+alias gp="git pull"
+alias ga="git add"
+alias gaa="git add :/"
+alias gpr="git remote prune origin"
+alias gru="git remote update"
+alias gcam="git commit -am"
+alias p="pnpm"
+alias gcb="gb | grep \* | cut -d ' ' -f2"
+# main으로 가서 main과 origin/main을 rebase
+alias grm='gco main ; gru ; git rebase origin/main'
+# unstracted 파일들을 stash
+alias stash='git stash push -u -m "wip"'
+# main을 업데이트해서 리베이스
+alias grc='git fetch origin; git rebase origin/main'
+alias unstage='git reset HEAD .'
+alias dp='node /Users/keumky2/Desktop/scripts/double-monitor-problem.js'
+alias rm=trash
+alias c=clear
+alias killall='osascript /Users/keumky2/kky/kill-apps.scpt'
+alias gedit="git branch --edit-description"
+
+# Fig post block. Keep at the bottom of this file.
+[[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"
+
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/homebrew/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/homebrew/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/opt/homebrew/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/homebrew/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
