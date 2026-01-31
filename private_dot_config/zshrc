@@ -1,0 +1,32 @@
+# zshrc 편집
+alias zshrc="cursor ~/.zshrc"
+
+# git alias
+alias gcm="git commit -m"
+alias gco="git checkout"
+alias gl="git log --oneline"
+alias gaa="git add :/"
+# unstracted 파일들을 stash
+alias stash='git stash push -u -m "wip"'
+
+
+push() {
+  # 현재 브랜치를 origin에 같은 브랜치 네임으로 push $1은 옵션
+  current_branch=$(git branch | grep \* | cut -d ' ' -f2)
+  echo "current branch: $current_branch"
+  git push origin $current_branch $1
+}
+
+copydiff(){
+    # 특정 브랜치를 인자로 받아주세요
+    if [ $# -eq 0 ]; then
+        echo "Error: Branch name is required."
+        echo "Usage: copydiff <branch-name>"
+        return 1
+    fi
+    git diff "$1" HEAD -- . ':!pnpm-lock.yaml' ':!*.stories.tsx' | pbcopy
+}
+
+
+
+
