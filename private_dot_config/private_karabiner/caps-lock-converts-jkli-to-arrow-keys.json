@@ -19,6 +19,81 @@
         }
       ],
       "from": {
+        "key_code": "f",
+        "modifiers": { "optional": ["any"] }
+      },
+      "to": [{ "key_code": "return_or_enter" }],
+      "type": "basic"
+    },
+    {
+      "conditions": [
+        {
+          "name": "caps_lock pressed",
+          "type": "variable_if",
+          "value": 1
+        }
+      ],
+      "from": {
+        "key_code": "7",
+        "modifiers": { "optional": ["any"] }
+      },
+      "to": [{ "key_code": "page_up" }],
+      "type": "basic"
+    },
+    {
+      "conditions": [
+        {
+          "name": "caps_lock pressed",
+          "type": "variable_if",
+          "value": 1
+        }
+      ],
+      "from": {
+        "key_code": "8",
+        "modifiers": { "optional": ["any"] }
+      },
+      "to": [{ "key_code": "page_down" }],
+      "type": "basic"
+    },
+    {
+      "conditions": [
+        {
+          "name": "caps_lock pressed",
+          "type": "variable_if",
+          "value": 1
+        }
+      ],
+      "from": {
+        "key_code": "h",
+        "modifiers": { "optional": ["any"] }
+      },
+      "to": [{ "key_code": "delete_forward" }],
+      "type": "basic"
+    },
+    {
+      "conditions": [
+        {
+          "name": "caps_lock pressed",
+          "type": "variable_if",
+          "value": 1
+        }
+      ],
+      "from": {
+        "key_code": "e",
+        "modifiers": { "optional": ["any"] }
+      },
+      "to": [{ "key_code": "escape" }],
+      "type": "basic"
+    },
+    {
+      "conditions": [
+        {
+          "name": "caps_lock pressed",
+          "type": "variable_if",
+          "value": 1
+        }
+      ],
+      "from": {
         "key_code": "j",
         "modifiers": { "optional": ["any"] }
       },
